@@ -1,0 +1,9 @@
+language: csharp
+solution: AskExtension.sln
+install:
+  - nuget restore AskExtension.sln
+  - nuget install xunit.runner.console -Version 2.1.0 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release AskExtension.sln
+  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./test/Extension.MSDN.Tests/bin/Release/Extension.MSDN.Tests.dll
+  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./test/Extension.StackOverflow.Tests/bin/Release/Extension.StackOverflow.Tests.dll

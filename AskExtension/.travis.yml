@@ -1,9 +1,0 @@
-language: csharp
-solution: AskExtension.sln
-install:
-  - nuget restore AskExtension.sln
-  - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner
-script:
-  - xbuild /p:Configuration=Release AskExtension.sln
-  - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./test/Extension.MSDN.Tests/bin/Release/Extension.MSDN.Tests.dll
-  - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./test/Extension.StackOverflow.Tests/bin/Release/Extension.StackOverflow.Tests.dll
