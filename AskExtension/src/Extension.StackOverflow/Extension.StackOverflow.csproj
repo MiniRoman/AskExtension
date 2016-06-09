@@ -129,6 +129,7 @@
       <HintPath>..\..\packages\Microsoft.Net.Http.2.0.20505.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -136,7 +137,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Common\Authentication.cs" />
+    <Compile Include="Common\ConstValues.cs" />
+    <Compile Include="Common\Question.cs" />
+    <Compile Include="Exceptions\Question\BodyQuestionException.cs" />
+    <Compile Include="Exceptions\InvalidQueryException.cs" />
+    <Compile Include="Exceptions\Question\TagQuestionException.cs" />
+    <Compile Include="Exceptions\Question\TitleQuestionException.cs" />
+    <Compile Include="Model\Question.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
