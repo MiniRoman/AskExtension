@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension", "src\Extension\Extension.csproj", "{A385D5F2-B962-48CA-B4FC-B504C57609EC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.StackOverflow", "src\Extension.StackOverflow\Extension.StackOverflow.csproj", "{E368A5C1-D618-4F8D-BCF4-B084CD2782F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.StackOverflow.Tests", "test\Extension.StackOverflow.Tests\Extension.StackOverflow.Tests.csproj", "{2A852DBF-3894-4023-8503-FCAB6FE5051A}"
