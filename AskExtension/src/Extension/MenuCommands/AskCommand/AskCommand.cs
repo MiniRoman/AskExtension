@@ -5,18 +5,19 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Timers;
+using System.Windows.Threading;
+using AskExtension.Core;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio;
+using Extension.StackOverflow.Common;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -42,6 +43,9 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// </summary>
         private readonly Package package;
 
+        [Import]
+        public AuthenticationService _authenticationService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AskCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
@@ -49,6 +53,8 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// <param name="package">Owner package, not null.</param>
         private AskCommand(Package package)
         {
+            ExtensionMefContainer.Service.SatisfyImportsOnce(this);
+
             if (package == null)
             {
                 throw new ArgumentNullException("package");
@@ -157,7 +163,7 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-            Instance = new AskCommand(package);
+               Instance = new AskCommand(package);
         }
 
         /// <summary>
@@ -179,52 +185,19 @@ namespace RallyExtension.MenuCommands.AskCommand
         }
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            var webBrowserService = ServiceProvider.GetService(typeof(IVsWebBrowsingService)) as IVsWebBrowsingService;
-            var webBrowserUser = Package.GetGlobalService(typeof(IVsWebBrowserUser)) as IVsWebBrowserUser;
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
-            IVsWindowFrame ppFrame;
-            //https://desktop-vs.open.collab.net/ds/viewMessage.do?dsMessageId=98485&dsForumId=730
-            Guid guidPropertyBrowser = new Guid(ToolWindowGuids80.WebBrowserWindow);
-            IVsWebBrowser ppBrowser;
-            webBrowserService.CreateWebBrowser(
-                //http://i1.blogs.msdn.com/b/robgruen/archive/2005/11/23/496508.aspx
-                (uint)(__VSCREATEWEBBROWSER.VSCWB_StartCustom | __VSCREATEWEBBROWSER.VSCWB_ForceNew | __VSCREATEWEBBROWSER.VSCWB_AutoShow),
-                ref guidPropertyBrowser,
-                "Test",
-                "http://www.allegro.pl",
-                webBrowserUser,
-                out ppBrowser,
-                out ppFrame);
 
-            var frameNotifyService = ServiceProvider.GetService(typeof(IVsWindowFrameNotify)) as IVsWindowFrameNotify;
-            uint cookie;
-            (ppFrame as IVsWindowFrame2).Advise(frameNotifyService, out cookie);
-            var ggg = new Guid(ToolWindowGuids80.WebBrowserWindow);//__VSFPROPID.VSFPROPID_ViewHelper;
-            IntPtr interf;
-            ppFrame.QueryViewInterface(ref ggg, out interf);
-            WindowEvents _windowEvents;
-            object browserWindow;
-            // EnvDTE.Window _editorWindow=null;
-            ppFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ExtWindowObject, out browserWindow);
-            _windowEvents = dte.Events.get_WindowEvents((browserWindow as Window));
-            _windowEvents.WindowClosing += OnWindowClosing;
-            _windowEvents.WindowMoved += (window, top, left, width, height) => OnWindowClosing(window);
-            Timer tmr = new Timer();
-            tmr.Interval = 100; // 0.1 second
-            ElapsedEventHandler timerHandler = (o, args) =>
+            if (_authenticationService.IsAuthorized())
             {
-                object urlObject;
-                ppBrowser.GetDocumentInfo((uint) __VSWBDOCINFOINDEX.VSWBDI_DocURL, out urlObject);
-                var url = urlObject as string;
 
-                tmr.Enabled = false;
-                tmr = null;
-            };
-            tmr.Elapsed += timerHandler;
-          //  tmr.Tick += timerHandler; // We'll write it in a bit
-            tmr.Start(); // The countdown is launched!
+            }
+            else
+            {
+                _authenticationService.Authorize();
+            }
+            
 
-
+            
 
 
             string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
@@ -254,5 +227,6 @@ namespace RallyExtension.MenuCommands.AskCommand
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
+
     }
 }

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AskExtension.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="StackExchangeApiApplicationId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">7356</Value>
+    </Setting>
+    <Setting Name="StackExchangeApiKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SYqy5Nlt8*V6uIgK)hWo0A((</Value>
+    </Setting>
+    <Setting Name="StackExchangeApiAuthUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://stackexchange.com/oauth/dialog</Value>
+    </Setting>
+    <Setting Name="StackExchangeApiAuthSuccessUrl" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://stackexchange.com/oauth/login_success</Value>
+    </Setting>
+    <Setting Name="StackExchangeApiRequestedScope" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">write_access,private_info</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

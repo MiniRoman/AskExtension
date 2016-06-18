@@ -14,9 +14,9 @@ namespace Extension.StackOverflow.Tests
         public void should_return_valid_access_token()
         {
             var accessToken = "dd32dsa";
-            var url = @"http://www.janusz.pl?parame=dd&access_token=" + accessToken;
+            var url = @"http://www.janusz.pl?parame=dd#access_token=" + accessToken;
 
-            var result = _auth.GetTokenBasedOnQuery(url);
+            var result = _auth.GetTokenBasedOnUrl(url);
             result.ShouldBe(accessToken);
         }
 
@@ -24,9 +24,9 @@ namespace Extension.StackOverflow.Tests
         public void should_return_exception_when_query_doesnt_contain_valid_param()
         {
             var accessToken = "dd32dsa";
-            var url = @"http://www.janusz.pl?parame=dd&accesen=" + accessToken;
+            var url = @"http://www.janusz.pl?parame=dd#accesen=" + accessToken;
 
-            var exc = Record.Exception(() => _auth.GetTokenBasedOnQuery(url));
+            var exc = Record.Exception(() => _auth.GetTokenBasedOnUrl(url));
             exc.ShouldNotBeNull();
             exc.ShouldBeOfType<InvalidQueryException>();
         }
