@@ -7,21 +7,17 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Globalization;
-using System.Timers;
-using System.Windows.Threading;
 using AskExtension.Core;
 using EnvDTE;
 using EnvDTE80;
-using Extension.StackOverflow.Common;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 
-namespace RallyExtension.MenuCommands.AskCommand
+namespace AskExtension.MenuCommands.AskCommand
 {
     /// <summary>
     /// Command handler
@@ -62,37 +58,16 @@ namespace RallyExtension.MenuCommands.AskCommand
 
             this.package = package;
 
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                var menuCommandID = new CommandID(CommandSet, CommandId);
-                //var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
+                var menuCommandId = new CommandID(CommandSet, CommandId);
 
-                var menuItem = new OleMenuCommand(MenuItemCallback, menuCommandID);
+                var menuItem = new OleMenuCommand(MenuItemCallback, menuCommandId);
                 menuItem.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
 
                 commandService.AddCommand(menuItem);
             }
-
-            //IVsTextManager txtMgr = (IVsTextManager)this.ServiceProvider.GetService(typeof(SVsTextManager));
-            //IVsTextView vTextView = null;
-            //int mustHaveFocus = 1;
-            //txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
-            //IVsUserData userData = vTextView as IVsUserData;
-            //if (userData == null)
-            //{
-            //    return null;
-            //}
-            //else
-            //{
-
-            //    IWpfTextViewHost viewHost;
-            //    object holder;
-            //    Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
-            //    userData.GetData(ref guidViewHost, out holder);
-            //    viewHost = (IWpfTextViewHost)holder;
-            //    return viewHost;
-            //}
         }
 
         private void menuCommand_BeforeQueryStatus(object sender, EventArgs e)
@@ -105,32 +80,18 @@ namespace RallyExtension.MenuCommands.AskCommand
                 menuCommand.Visible = false;
                 menuCommand.Enabled = false;
 
-                IVsTextManager txtMgr = (IVsTextManager)this.ServiceProvider.GetService(typeof(SVsTextManager));
-                IVsTextView vTextView = null;
-                int mustHaveFocus = 1;
+                var txtMgr = (IVsTextManager)ServiceProvider.GetService(typeof(SVsTextManager));
+                IVsTextView vTextView;
+                const int mustHaveFocus = 1;
                 txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
-                IDataObject dataObject = new OleDataObject();
+                IDataObject dataObject;
                 vTextView.GetSelectionDataObject(out dataObject);
 
                 var selectedText = "";
                 vTextView.GetSelectedText(out selectedText);
 
-                if(selectedText == null || selectedText.Equals(""))
+                if (selectedText == null || selectedText.Equals(""))
                     return;
-             //   IVsHierarchy hierarchy = null;
-             //   uint itemid = VSConstants.VSITEMID_NIL;
-
-                //   if (!IsSingleProjectItemSelection(out hierarchy, out itemid)) return;
-                // Get the file path
-                //   string itemFullPath = null;
-                //   ((IVsProject)hierarchy).GetMkDocument(itemid, out itemFullPath);
-                //   var transformFileInfo = new FileInfo(itemFullPath);
-
-                // then check if the file is named 'web.config'
-                //  bool isWebConfig = string.Compare("web.config", transformFileInfo.Name, StringComparison.OrdinalIgnoreCase) == 0;
-
-                // if not leave the menu hidden
-                //  if (!isWebConfig) return;
 
                 menuCommand.Visible = true;
                 menuCommand.Enabled = true;
@@ -149,13 +110,7 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
+        private IServiceProvider ServiceProvider => this.package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -163,7 +118,7 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// <param name="package">Owner package, not null.</param>
         public static void Initialize(Package package)
         {
-               Instance = new AskCommand(package);
+            Instance = new AskCommand(package);
         }
 
         /// <summary>
@@ -195,28 +150,23 @@ namespace RallyExtension.MenuCommands.AskCommand
             {
                 _authenticationService.Authorize();
             }
-            
 
-            
+            var message = $"Inside {GetType().FullName}.MenuItemCallback()";
+            string title;
 
-
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "AskCommand";
-
-            IVsTextManager txtMgr = (IVsTextManager)this.ServiceProvider.GetService(typeof(SVsTextManager));
+            var txtMgr = (IVsTextManager)this.ServiceProvider.GetService(typeof(SVsTextManager));
             IVsTextView vTextView = null;
-            int mustHaveFocus = 1;
+            const int mustHaveFocus = 1;
             txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
             vTextView.GetSelectedText(out title);
-            IVsUserData userData = vTextView as IVsUserData;
+            var userData = vTextView as IVsUserData;
 
 
-            DTE2 dte2 = (DTE2) this.ServiceProvider.GetService(typeof (DTE));
-    OutputWindow outputWindow = dte2.ToolWindows.OutputWindow;
+            var dte2 = (DTE2)this.ServiceProvider.GetService(typeof(DTE));
+            var outputWindow = dte2.ToolWindows.OutputWindow;
 
-            OutputWindowPane outputWindowPane = outputWindow.OutputWindowPanes.Add("A New Pane");
+            var outputWindowPane = outputWindow.OutputWindowPanes.Add("A New Pane");
             outputWindowPane.OutputString("Some Text");
-
 
             // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(

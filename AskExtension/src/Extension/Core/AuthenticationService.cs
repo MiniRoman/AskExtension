@@ -5,7 +5,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Windows.Threading;
 using AskExtension.Properties;
-using EnvDTE;
 using Extension.StackOverflow.Common;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Settings;
@@ -60,7 +59,7 @@ namespace AskExtension.Core
             SetTokenInSettings(encryptedToken);
         }
 
-        private string GetUrlToAuthenticate()
+        private static string GetUrlToAuthenticate()
         {
             return Settings.Default["StackExchangeApiAuthUrl"] +
                    "?client_id=" + Settings.Default["StackExchangeApiApplicationId"] +
@@ -71,60 +70,67 @@ namespace AskExtension.Core
         public void Authorize()
         {
             var webBrowserService = ServiceProvider.GlobalProvider.GetService(typeof(IVsWebBrowsingService)) as IVsWebBrowsingService;
-            IVsWindowFrame ppFrame;
             var webBrowserUser = Package.GetGlobalService(typeof(IVsWebBrowserUser)) as IVsWebBrowserUser;
             //https://desktop-vs.open.collab.net/ds/viewMessage.do?dsMessageId=98485&dsForumId=730
-            Guid guidPropertyBrowser = new Guid(ToolWindowGuids80.WebBrowserWindow);
+            var guidPropertyBrowser = new Guid(ToolWindowGuids80.WebBrowserWindow);
             IVsWebBrowser ppBrowser;
-            webBrowserService.CreateWebBrowser(
-                //http://i1.blogs.msdn.com/b/robgruen/archive/2005/11/23/496508.aspx
-                (uint)(__VSCREATEWEBBROWSER.VSCWB_StartCustom | __VSCREATEWEBBROWSER.VSCWB_ForceNew | __VSCREATEWEBBROWSER.VSCWB_AutoShow),
-                ref guidPropertyBrowser,
-                "Test",
-                GetUrlToAuthenticate(),
-                webBrowserUser,
-                out ppBrowser,
-                out ppFrame);
-
-            var tmr = new DispatcherTimer();
-            tmr.Interval = new TimeSpan(0, 0, 0, 0, 300);
-            EventHandler timerHandler = (o, args) =>
+            if (webBrowserService != null)
             {
-                webBrowserService = IntervalHandler(ppBrowser, tmr);
-            };
-            tmr.Tick += timerHandler;
-            tmr.Start();
-            
+                IVsWindowFrame ppFrame;
+                webBrowserService.CreateWebBrowser(
+                    //http://i1.blogs.msdn.com/b/robgruen/archive/2005/11/23/496508.aspx
+                    (uint)(__VSCREATEWEBBROWSER.VSCWB_StartCustom | __VSCREATEWEBBROWSER.VSCWB_ForceNew | __VSCREATEWEBBROWSER.VSCWB_AutoShow),
+                    ref guidPropertyBrowser,
+                    "Test",
+                    GetUrlToAuthenticate(),
+                    webBrowserUser,
+                    out ppBrowser,
+                    out ppFrame);
+
+                var tmr = new DispatcherTimer
+                {
+                    Interval = new TimeSpan(0, 0, 0, 0, 300)
+                };
+                EventHandler timerHandler = (o, args) =>
+                {
+                    webBrowserService = IntervalHandler(ppBrowser, tmr);
+                };
+                tmr.Tick += timerHandler;
+                tmr.Start();
+            }
         }
 
         public bool IsAuthorized()
         {
-            return !GetKey().IsNullOrEmpty();
+            return !string.IsNullOrWhiteSpace(GetKey());
         }
 
         private IVsWebBrowsingService IntervalHandler(IVsWebBrowser browser, DispatcherTimer tmr)
         {
-            IVsWebBrowser ppBrowser;
-            IVsWindowFrame ppFrame;
             IVsWebBrowsingService webBrowserService = ServiceProvider.GlobalProvider.GetService(typeof(IVsWebBrowsingService)) as IVsWebBrowsingService;
-            webBrowserService.GetFirstWebBrowser(Guid.Empty, out ppFrame, out ppBrowser);
-            if (ppFrame.IsVisible() == VSConstants.S_FALSE)
+            if (webBrowserService != null)
             {
-                tmr.Stop();
-                tmr.IsEnabled = false;
+                IVsWebBrowser ppBrowser;
+                IVsWindowFrame ppFrame;
+                webBrowserService.GetFirstWebBrowser(Guid.Empty, out ppFrame, out ppBrowser);
+                if (ppFrame.IsVisible() == VSConstants.S_FALSE)
+                {
+                    tmr.Stop();
+                    tmr.IsEnabled = false;
+                }
+                object urlObject;
+                browser.GetDocumentInfo((uint)__VSWBDOCINFOINDEX.VSWBDI_DocURL, out urlObject);
+                var url = urlObject as string;
+                Debug.WriteLine(url);
+                if (url != null && url.Contains(ConstValues.Params.AccessToken))
+                {
+                    SetKey(_authentication.GetTokenBasedOnUrl(url));
+                    tmr.Stop();
+                    tmr.IsEnabled = false;
+                }
+                return webBrowserService;
             }
-            var user = Package.GetGlobalService(typeof(IVsWebBrowserUser)) as IVsWebBrowserUser;
-            object urlObject;
-            browser.GetDocumentInfo((uint)__VSWBDOCINFOINDEX.VSWBDI_DocURL, out urlObject);
-            var url = urlObject as string;
-            Debug.WriteLine(url);
-            if (url != null && url.Contains(ConstValues.Params.AccessToken))
-            {
-                SetKey(_authentication.GetTokenBasedOnUrl(url));
-                tmr.Stop();
-                tmr.IsEnabled = false;
-            }
-            return webBrowserService;
+            return null;
         }
     }
 }
