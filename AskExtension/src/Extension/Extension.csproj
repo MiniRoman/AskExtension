@@ -54,7 +54,6 @@
   <ItemGroup>
     <Compile Include="Core\AuthenticationService.cs" />
     <Compile Include="Core\ExtensionMefContainer.cs" />
-    <Compile Include="Core\StringExtensions.cs" />
     <Compile Include="MenuCommands\AskCommand\AskCommand.cs" />
     <Compile Include="MenuCommands\AskCommand\AskCommandPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

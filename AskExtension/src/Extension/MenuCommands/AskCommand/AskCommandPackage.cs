@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using AskExtension.MenuCommands.AskCommand;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -68,7 +69,7 @@ namespace RallyExtension.MenuCommands.AskCommand
         /// </summary>
         protected override void Initialize()
         {
-            AskCommand.Initialize(this);
+            AskExtension.MenuCommands.AskCommand.AskCommand.Initialize(this);
             base.Initialize();
             AskExtension.QuestionFormCommand.Initialize(this);
         }
