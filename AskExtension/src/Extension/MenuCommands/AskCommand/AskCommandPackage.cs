@@ -41,6 +41,7 @@ namespace RallyExtension.MenuCommands.AskCommand
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(AskCommandPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideToolWindow(typeof(AskExtension.QuestionForm))]
     public sealed class AskCommandPackage : Package
     {
         /// <summary>
@@ -69,6 +70,7 @@ namespace RallyExtension.MenuCommands.AskCommand
         {
             AskCommand.Initialize(this);
             base.Initialize();
+            AskExtension.QuestionFormCommand.Initialize(this);
         }
 
         #endregion

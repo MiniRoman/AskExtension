@@ -63,6 +63,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ToolWindows\QuestionForm\QuestionForm.cs" />
+    <Compile Include="ToolWindows\QuestionForm\QuestionFormCommand.cs" />
+    <Compile Include="ToolWindows\QuestionForm\QuestionFormControl.xaml.cs">
+      <DependentUpon>QuestionFormControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -85,6 +90,7 @@
     <Content Include="MenuCommands\AskCommand\Resources\AskCommand.png" />
     <Content Include="MenuCommands\AskCommand\Resources\AskCommandPackage.ico" />
     <None Include="MenuCommands\AskCommand\Resources\MenuIcon.ico" />
+    <Content Include="Resources\QuestionFormCommand.png" />
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +192,8 @@
       <HintPath>..\..\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -196,17 +204,22 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Extension.StackOverflow\Extension.StackOverflow.csproj">
       <Project>{e368a5c1-d618-4f8d-bcf4-b084cd2782f3}</Project>
       <Name>Extension.StackOverflow</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ToolWindows\QuestionForm\QuestionFormControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />

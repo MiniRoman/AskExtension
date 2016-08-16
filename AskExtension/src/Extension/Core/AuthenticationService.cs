@@ -113,7 +113,6 @@ namespace AskExtension.Core
                 tmr.Stop();
                 tmr.IsEnabled = false;
             }
-            var user = Package.GetGlobalService(typeof(IVsWebBrowserUser)) as IVsWebBrowserUser;
             object urlObject;
             browser.GetDocumentInfo((uint)__VSWBDOCINFOINDEX.VSWBDI_DocURL, out urlObject);
             var url = urlObject as string;
@@ -121,6 +120,14 @@ namespace AskExtension.Core
             if (url != null && url.Contains(ConstValues.Params.AccessToken))
             {
                 SetKey(_authentication.GetTokenBasedOnUrl(url));
+                ppFrame.CloseFrame((uint) __FRAMECLOSE.FRAMECLOSE_NoSave);
+                VsShellUtilities.ShowMessageBox(
+                    ServiceProvider.GlobalProvider,
+                    "Plugin has been authorized!",
+                    "Success",
+                    OLEMSGICON.OLEMSGICON_INFO,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 tmr.Stop();
                 tmr.IsEnabled = false;
             }
