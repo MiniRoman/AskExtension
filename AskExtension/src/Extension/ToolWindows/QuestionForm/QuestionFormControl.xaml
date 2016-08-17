@@ -9,9 +9,45 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="10" HorizontalAlignment="Center">QuestionForm</TextBlock>
-            <Button Content="Click me!" Click="button1_Click" Width="120" Height="80" Name="button1"/>
-        </StackPanel>
+        <Grid Background="AliceBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <!-- Header -->
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Text="Ask a question on stackoverflow:" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <!-- Header -->
+            <!-- Title -->
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Question title:" VerticalAlignment="Center" FontSize="10"></TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" x:Name="TitleTextBox" VerticalAlignment="Center" FontSize="10"></TextBox>
+            <!-- Title -->
+            <!-- Question -->
+            <TextBlock Grid.Column="0" Grid.Row="2" Text="Question:" VerticalAlignment="Center" FontSize="10"></TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" x:Name="QuestionTextBox" VerticalAlignment="Stretch" TextWrapping="Wrap" FontSize="10"></TextBox>
+            <!-- Question -->
+
+            <!-- Code -->
+            <TextBlock Grid.Column="0" Grid.Row="3" Text="Code:" VerticalAlignment="Center" FontSize="10"></TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" x:Name="CodeTextBox" VerticalAlignment="Stretch" TextWrapping="Wrap" FontSize="10"></TextBox>
+            <!-- Code -->
+            
+            <!-- Tags -->
+            <TextBlock Grid.Column="0" Grid.Row="4" Text="Tags (separated by ';'):" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="8"></TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" x:Name="TagsTextBox" VerticalAlignment="Center" FontSize="10"></TextBox>
+            <!-- Tags -->
+            
+            <!-- Apply -->
+            <Button Grid.Column="2" Grid.Row="5" x:Name="AskQuestionButton" FontSize="10" Content="Apply" Click="AskQuestionButton_Click"></Button>
+            <!-- Apply -->
+        </Grid>
     </Grid>
 </UserControl>
