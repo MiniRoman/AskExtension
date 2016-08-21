@@ -11,6 +11,7 @@ using System.Globalization;
 using AskExtension.Core;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -138,7 +139,7 @@ namespace AskExtension.MenuCommands.AskCommand
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
-        private void MenuItemCallback(object sender, EventArgs e)
+        private async void MenuItemCallback(object sender, EventArgs e)
         {
             var dte = Package.GetGlobalService(typeof(DTE)) as DTE;
 
@@ -148,9 +149,11 @@ namespace AskExtension.MenuCommands.AskCommand
             }
             else
             {
-                _authenticationService.Authorize();
+                await _authenticationService.Authorize();
             }
-
+            var pane = this.package.FindToolWindow(typeof(QuestionForm), 0, true);
+            IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
+            ErrorHandler.ThrowOnFailure(frame.Show());
             var message = $"Inside {GetType().FullName}.MenuItemCallback()";
             string title;
 
