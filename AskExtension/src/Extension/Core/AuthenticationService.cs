@@ -78,7 +78,7 @@ namespace AskExtension.Core
             var guidPropertyBrowser = new Guid(ToolWindowGuids80.WebBrowserWindow);
             IVsWebBrowser ppBrowser;
             var isAuthorized = false;
-            var didFinishAuth = new Mutex(true);
+            var didFinishAuth = new Semaphore(0, 1);
             
             if (webBrowserService != null)
             {
@@ -102,17 +102,15 @@ namespace AskExtension.Core
                 {
                     isAuthorized = IntervalHandler(ppBrowser, tmr);
                     if (isAuthorized)
-                        didFinishAuth.ReleaseMutex();
+                        didFinishAuth.Release(1);
                 };
                 tmr.Tick += timerHandler;
                 tmr.Start();
             }
             var task = new Task<bool>(() =>
             {
-                using (didFinishAuth)
-                {
-                    return isAuthorized;
-                }
+                didFinishAuth.WaitOne();
+                return isAuthorized;
             });
             task.Start();
             return task;
@@ -139,7 +137,7 @@ namespace AskExtension.Core
                 object urlObject;
                 browser.GetDocumentInfo((uint)__VSWBDOCINFOINDEX.VSWBDI_DocURL, out urlObject);
                 var url = urlObject as string;
-                Debug.WriteLine(url);
+
                 if (url != null && url.Contains(ConstValues.Params.AccessToken))
                 {
                     SetKey(_authentication.GetTokenBasedOnUrl(url));

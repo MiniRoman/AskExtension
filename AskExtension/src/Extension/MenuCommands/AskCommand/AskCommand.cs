@@ -151,9 +151,8 @@ namespace AskExtension.MenuCommands.AskCommand
             {
                 await _authenticationService.Authorize();
             }
-            var pane = this.package.FindToolWindow(typeof(QuestionForm), 0, true);
-            IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
-            ErrorHandler.ThrowOnFailure(frame.Show());
+
+
             var message = $"Inside {GetType().FullName}.MenuItemCallback()";
             string title;
 
@@ -162,6 +161,12 @@ namespace AskExtension.MenuCommands.AskCommand
             const int mustHaveFocus = 1;
             txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
             vTextView.GetSelectedText(out title);
+
+            var pane = this.package.FindToolWindow(typeof(QuestionForm), 0, true);
+            (pane as QuestionForm).SetContent(title);
+            IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
+            ErrorHandler.ThrowOnFailure(frame.Show());
+
             var userData = vTextView as IVsUserData;
 
 
@@ -171,14 +176,14 @@ namespace AskExtension.MenuCommands.AskCommand
             var outputWindowPane = outputWindow.OutputWindowPanes.Add("A New Pane");
             outputWindowPane.OutputString("Some Text");
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            //// Show a message box to prove we were here
+            //VsShellUtilities.ShowMessageBox(
+            //    this.ServiceProvider,
+            //    message,
+            //    title,
+            //    OLEMSGICON.OLEMSGICON_INFO,
+            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
     }
